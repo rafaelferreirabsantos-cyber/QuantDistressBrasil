@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quantdistress-brasil"
+version = "0.1.0"
+description = "Infraestrutura de pesquisa sobre qualidade operacional e estresse financeiro de companhias brasileiras"
+readme = "README.md"
+requires-python = ">=3.11,<3.15"
+authors = [{ name = "ImpactUFSCar — Área de Pesquisa & Mercado" }]
+dependencies = [
+    "numpy>=1.26.4,<3",
+    "pandas>=2.2.3,<3",
+    "pyarrow>=18,<30",
+]
+
+[project.scripts]
+quantdistress-dfp = "quantdistress.data.dfp:main"
+
+[project.urls]
+Repository = "https://github.com/rafaelferreirabsantos-cyber/QuantDistressBrasil"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29,<8",
+    "jupyterlab>=4.3,<5",
+    "nbconvert>=7.16,<8",
+    "pytest>=8.3,<10",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/quantdistress"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"

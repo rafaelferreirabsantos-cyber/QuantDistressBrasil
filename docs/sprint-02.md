@@ -1,0 +1,14 @@
+# Sprint 02 — Painel histórico e indicadores candidatos
+
+A ImpactUFSCar, pela Área de Pesquisa & Mercado, é responsável pela execução, revisão e aprovação metodológica. Com uma equipe inicial de aproximadamente seis integrantes, a área pode distribuir o trabalho em três frentes de duas pessoas, com revisão cruzada de regras contábeis e temporais antes de aprovar uma entrega.
+
+| Ordem | Frente | Entrega | Critério de aceite |
+|---|---|---|---|
+| 1 | Engenharia de dados | Inventário e ingestão de múltiplos arquivos anuais DFP, incluindo histórico de versões. | Anos e famílias catalogados com hashes, cobertura e resumo de variações de esquema. Divergências e indisponibilidades ficam registradas por fonte e ano. |
+| 2 | Engenharia de dados e metodologia | Universo histórico e política de informação disponível em cada data de corte. | Cada observação selecionada guarda evidência de disponibilidade e linhagem até a entrega. Testes demonstram o tratamento de reapresentação posterior e de emissor que saiu do universo. A incidência de entregas sem data verificável está quantificada. |
+| 3 | Contabilidade e indicadores | Catálogo versionado de contas por escopo e setor, com regras de seleção, escala, sinal e conciliação. | Cada indicador elegível aponta para famílias, códigos, sinais, unidade, duração e condições de validade verificadas em arquivos reais. Identidades contábeis têm tolerâncias justificadas e incidências reportadas. |
+| 4 | Contabilidade e indicadores | Protótipos das variáveis candidatas de Quality e Distress em colunas distintas. | Fórmulas, linhagem e justificativas estão documentadas. Cobertura, faltantes, denominadores inválidos e caudas são avaliados por ano, setor e escopo. Há testes para períodos incompatíveis e casos que poderiam causar dupla contagem. |
+| 5 | Metodologia e validação | Piloto de classificação de eventos em fontes públicas e plano de validação temporal. | Definição do evento, data verificável, deduplicação de comunicados, horizonte, censura e blocos temporais estão especificados. Uma amostra revisada documenta concordâncias e divergências de classificação. |
+| 6 | Revisão cruzada | Relatório de viabilidade para os dois eixos. | O relatório apresenta cobertura mínima em estudo, comparabilidade e diagnósticos por dimensão, correlação entre candidatos dos dois eixos, decisões pendentes e critérios para autorizar o próximo experimento. |
+
+A construção de escalas e pesos experimentais depende da cobertura histórica, da disponibilidade temporal e da consistência das contas. Dimensões com cobertura ou comparabilidade insuficientes ficam identificadas no relatório de viabilidade para ajuste de escopo ou revisão de definição. A investigação de eventos do IPE pode começar em paralelo ao mapeamento contábil. A associação entre indicadores e eventos depende da aprovação do painel e das regras de validação descritas na [metodologia](metodologia.md).
