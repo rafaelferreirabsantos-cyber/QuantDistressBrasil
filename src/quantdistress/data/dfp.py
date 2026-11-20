@@ -3,6 +3,7 @@
 import argparse
 import csv
 import re
+from collections.abc import Iterator
 from datetime import datetime, timezone
 from io import TextIOWrapper
 from pathlib import Path
@@ -44,11 +45,35 @@ COLUNAS_FATO_ADICIONAIS = (
     "FATO_REPETIDO",
 )
 FATORES_ESCALA = {"UNIDADE": 1, "MIL": 1_000}
+MEMBROS_ASPAS_LEGADAS = {
+    f"dfp_cia_aberta_BPP_{escopo}_{ano}.csv"
+    for ano in (2019, 2020)
+    for escopo in ESCOPO_DFP
+}
+ROTULO_LEGADO = ';2.03.02.13;"Senior Notes" Reestruturados;'
+ROTULO_ESCAPADO = ';2.03.02.13;"""Senior Notes"" Reestruturados";'
 
 
-def _ler_csv(zip_dfp: ZipFile, membro: str, colunas: tuple[str, ...]) -> pd.DataFrame:
+def _escapar_aspas_legadas(fluxo: TextIOWrapper, linhas_ajustadas: list[int]) -> Iterator[str]:
+    """Conserva as aspas literais do rótulo publicado nos BPP legados."""
+    for numero, linha in enumerate(fluxo, start=1):
+        if ROTULO_LEGADO in linha:
+            linhas_ajustadas.append(numero)
+            linha = linha.replace(ROTULO_LEGADO, ROTULO_ESCAPADO)
+        yield linha
+
+
+def _ler_csv(
+    zip_dfp: ZipFile, membro: str, colunas: tuple[str, ...]
+) -> tuple[pd.DataFrame, list[int]]:
+    linhas_ajustadas = []
     with zip_dfp.open(membro) as bruto, TextIOWrapper(bruto, encoding="latin-1", newline="") as fluxo:
-        registros = csv.reader(fluxo, delimiter=";", strict=True)
+        origem = (
+            _escapar_aspas_legadas(fluxo, linhas_ajustadas)
+            if membro in MEMBROS_ASPAS_LEGADAS
+            else fluxo
+        )
+        registros = csv.reader(origem, delimiter=";", strict=True)
         cabecalho = next(registros, [])
         faltantes = sorted(set(colunas) - set(cabecalho))
         inesperadas = sorted(set(cabecalho) - set(colunas))
@@ -64,7 +89,7 @@ def _ler_csv(zip_dfp: ZipFile, membro: str, colunas: tuple[str, ...]) -> pd.Data
             linhas.append(campos)
 
     quadro = pd.DataFrame(linhas, columns=cabecalho, dtype="string")[list(colunas)]
-    return quadro.mask(quadro.eq(""))
+    return quadro.mask(quadro.eq("")), linhas_ajustadas
 
 
 def _converter_dias(quadro: pd.DataFrame, colunas: tuple[str, ...], membro: str) -> None:
@@ -101,11 +126,11 @@ def _preparar_indice(entregas: pd.DataFrame, membro: str) -> pd.DataFrame:
 
 def _ler_fatos(
     zip_dfp: ZipFile, membro: str, familia: str, escopo: str, vinculos: pd.DataFrame
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, list[int]]:
     colunas = COLUNAS_FATO
     if familia in {"BPA", "BPP"}:
         colunas = tuple(coluna for coluna in colunas if coluna != "DT_INI_EXERC")
-    fatos = _ler_csv(zip_dfp, membro, colunas)
+    fatos, linhas_ajustadas = _ler_csv(zip_dfp, membro, colunas)
     if not fatos["GRUPO_DFP"].str.startswith(ESCOPO_DFP[escopo] + " -", na=True).all():
         raise ValueError(f"{membro}: escopo no GRUPO_DFP divergente do nome do arquivo.")
     if not fatos["VL_CONTA"].str.fullmatch(r"[+-]?[0-9]+(?:\.[0-9]+)?", na=True).all():
@@ -122,7 +147,7 @@ def _ler_fatos(
     fatos = fatos[[*COLUNAS_FATO, *COLUNAS_FATO_ADICIONAIS]]
     fatos = fatos.merge(vinculos, how="left", on=list(CHAVE_ENTREGA), validate="many_to_one")
     fatos["SITUACAO_VINCULO"] = fatos["SITUACAO_VINCULO"].fillna("ausente")
-    return fatos
+    return fatos, linhas_ajustadas
 
 
 def _processar_zip(arquivo: Path, ano: int, pasta: Path, fonte: dict) -> None:
@@ -140,22 +165,26 @@ def _processar_zip(arquivo: Path, ano: int, pasta: Path, fonte: dict) -> None:
         faltantes = sorted(esperados - set(nomes))
         if faltantes:
             raise ValueError(f"{arquivo.name}: membros requeridos ausentes: {', '.join(faltantes)}.")
-        entregas = _ler_csv(zip_dfp, membro_indice, COLUNAS_ENTREGA)
+        entregas, _ = _ler_csv(zip_dfp, membro_indice, COLUNAS_ENTREGA)
         vinculos = _preparar_indice(entregas, membro_indice)
         processados = [{"arquivo": membro_indice, "tipo": "entregas", "linhas": len(entregas)}]
         partes = []
         for membro, (familia, escopo) in membros_fatos.items():
-            parte = _ler_fatos(zip_dfp, membro, familia, escopo, vinculos)
+            parte, linhas_ajustadas = _ler_fatos(zip_dfp, membro, familia, escopo, vinculos)
             partes.append(parte)
-            processados.append(
-                {
-                    "arquivo": membro,
-                    "tipo": "fatos",
-                    "familia": familia,
-                    "escopo": escopo,
-                    "linhas": len(parte),
+            metadados = {
+                "arquivo": membro,
+                "tipo": "fatos",
+                "familia": familia,
+                "escopo": escopo,
+                "linhas": len(parte),
+            }
+            if linhas_ajustadas:
+                metadados["ajustes_csv"] = {
+                    "tipo": "escape_aspas_rotulo_bpp_legado",
+                    "linhas_fisicas": linhas_ajustadas,
                 }
-            )
+            processados.append(metadados)
         fora_escopo = [
             {"arquivo": info.filename, "bytes_descompactados": info.file_size}
             for info in zip_dfp.infolist()

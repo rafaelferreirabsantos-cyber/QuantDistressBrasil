@@ -1602,6 +1602,9 @@ dev = [
     { name = "nbconvert" },
     { name = "pytest" },
 ]
+test = [
+    { name = "pytest" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -1617,6 +1620,7 @@ dev = [
     { name = "nbconvert", specifier = ">=7.16,<8" },
     { name = "pytest", specifier = ">=8.3,<10" },
 ]
+test = [{ name = "pytest", specifier = ">=8.3,<10" }]
 
 [[package]]
 name = "referencing"

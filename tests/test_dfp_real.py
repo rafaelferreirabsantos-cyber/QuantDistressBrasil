@@ -42,6 +42,7 @@ def _conferir_membro(zip_dfp: ZipFile, membro: str, parquet: Path) -> int:
     return len(csv_df)
 
 
+@pytest.mark.dados_oficiais
 def test_cli_dfp_2024_reconcilia_parquet_com_csv(tmp_path: Path) -> None:
     caminho_zip = os.environ.get("QUANTDISTRESS_TEST_DFP_2024")
     if not caminho_zip:

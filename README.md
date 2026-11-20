@@ -10,6 +10,10 @@ O desenho prevê dois índices independentes de 0 a 100. O **Quality Score** aum
 
 A primeira entrega organiza a ingestão e a exploração das demonstrações financeiras padronizadas anuais da CVM. O pipeline lê o índice de entregas e os arquivos de BPA, BPP, DRE, DFC pelo método direto e DFC pelo método indireto, cada um em seu escopo individual ou consolidado. Ele preserva exercícios correntes e comparativos, versões, identificadores e a origem de cada registro. O piloto usa a DFP 2024. ITR e IPE são fontes de pesquisa para fases posteriores. [DFP](https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp) · [ITR](https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr) · [IPE](https://dados.cvm.gov.br/dataset/cia_aberta-doc-ipe)
 
+## Sprint 02
+
+O painel contábil de 2019 a 2025 reúne a auditoria de duplicatas, o universo documental de emissores por exercício e nove indicadores candidatos. As tabelas usam a versão máxima identificada na captura e mantêm o escopo individual ou consolidado. O painel tem finalidade descritiva. A validação prospectiva depende da evidência de divulgação e das versões históricas dos valores. [Parecer e cobertura](docs/resultado-sprint-02.md) · [Inventário histórico](docs/historico-dfp.md) · [Auditoria de duplicatas](docs/auditoria-duplicatas.md) · [Dicionário dos indicadores](docs/conceitos-indicadores.md)
+
 ## Execução local
 
 Execute na raiz do repositório com `uv` e Python 3.13. O `uv.lock` fixa as dependências. O grupo `dev` inclui Pytest e Jupyter. [Documentação do uv](https://docs.astral.sh/uv/)
@@ -33,6 +37,8 @@ $env:QUANTDISTRESS_TEST_DFP_2024 = 'caminho/dfp_cia_aberta_2024.zip'
 uv run --locked pytest
 ```
 
+A integração contínua executa `uv run --locked pytest -m 'not dados_oficiais'` com fixtures locais. Para rodar somente a verificação com o arquivo oficial, configure a variável acima e use `uv run --locked pytest -m dados_oficiais`.
+
 Execute todas as células do notebook e grave uma cópia com os resultados em `outputs/`.
 
 ```bash
@@ -41,14 +47,35 @@ uv run --locked jupyter nbconvert --to notebook --execute notebooks/01_exploraca
 
 O notebook localiza a captura processada de 2024. Quando houver mais de uma captura, defina a variável de ambiente `QUANTDISTRESS_DFP_SNAPSHOT` com o caminho para a pasta que contém o manifesto e os dois arquivos Parquet. Para exploração interativa, inicie `uv run --locked jupyter lab` na raiz e abra o notebook.
 
+### Painel descritivo de 2019 a 2025
+
+Execute na raiz do repositório. Estas instruções em PowerShell adquirem os arquivos atualmente publicados. Para reproduzir o recorte do relatório, preserve os ZIPs e as fontes cadastrais e confira seus hashes. [Inventário de capturas](docs/historico-dfp.md)
+
+```powershell
+$destinoCad = 'data/raw/cadastro/sprint02'
+New-Item -ItemType Directory -Force $destinoCad | Out-Null
+2019..2025 | ForEach-Object {
+    uv run --locked quantdistress-dfp --ano $_
+    if ($LASTEXITCODE -ne 0) { throw "Falha na ingestão DFP de $_" }
+    curl.exe -fsSL "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/FCA/DADOS/fca_cia_aberta_$_.zip" -o "$destinoCad/fca_cia_aberta_$_.zip"
+    if ($LASTEXITCODE -ne 0) { throw "Falha no download FCA de $_" }
+}
+curl.exe -fsSL 'https://dados.cvm.gov.br/dados/CIA_ABERTA/CAD/DADOS/cad_cia_aberta.csv' -o "$destinoCad/cad_cia_aberta.csv"
+if ($LASTEXITCODE -ne 0) { throw 'Falha no download do cadastro CVM' }
+uv run --locked python -m quantdistress.evaluation.panel --coleta-cadastral (Get-Date -Format 'yyyy-MM-dd')
+uv run --locked jupyter nbconvert --to notebook --execute notebooks/02_painel_descritivo.ipynb --output-dir outputs
+```
+
+O painel aceita `--anos` para um subconjunto e `--snapshot ANO=SHA256` para resolver anos com mais de uma captura. A saída padrão é `data/processed/sprint02/`. Cada ano inclui o cadastro, fatos selecionados, indicadores com linhagem e a auditoria de duplicatas. Dois CSVs resumem cobertura por ano, escopo e setor. Se a saída já existir, informe um diretório novo com `--saida` e aponte `QUANTDISTRESS_PAINEL` para esse diretório ao executar o notebook.
+
 ## Estrutura e documentação
 
 | Caminho | Conteúdo |
 | --- | --- |
 | `src/quantdistress/data/` | Aquisição, validação de estrutura, normalização e rastreabilidade da DFP |
 | `src/quantdistress/evaluation/` | Diagnósticos de integridade e cobertura |
-| `src/quantdistress/features/`, `src/quantdistress/scoring/` | Módulos reservados à construção e à validação futura dos indicadores |
-| `data/raw/`, `data/interim/`, `data/processed/` | Capturas brutas, tabelas de ingestão e camada analítica futura |
+| `src/quantdistress/features/`, `src/quantdistress/scoring/` | Dicionário de contas, indicadores candidatos e espaço para futuros scores |
+| `data/raw/`, `data/interim/`, `data/processed/` | Capturas brutas, tabelas de ingestão e painel analítico local |
 | `notebooks/`, `tests/`, `outputs/` | Exploração, testes automatizados e resultados locais |
 
 - [Metodologia de pesquisa](docs/metodologia.md)
