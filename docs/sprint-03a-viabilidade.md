@@ -2,6 +2,8 @@
 
 ImpactUFSCar — Pesquisa & Mercado. O estudo usa o painel descritivo revisado da Sprint 02, com capturas anuais de 2019 a 2025. Os resultados descrevem a viabilidade contábil das propostas. O cálculo histórico dos scores depende de evidência de divulgação e da aprovação metodológica. [Inventário e hashes das fontes](historico-dfp.md) · [Especificação proposta](sprint-03a-especificacao.md)
 
+A revisão final reproduz o benchmark exato e mede separadamente a inclusão do alvo, a robustez a mudanças de referência e o efeito de macrosetores candidatos. As contagens desta página conservam o piloto original. [Resultados da revisão final](sprint-03a-revisao-final.md)
+
 ## Base, unidade e filtros
 
 O painel tem 5.019 referências e 10.038 observações quando se contam os dois escopos. Abrange 909 códigos CVM únicos no período e 907 CNPJs distintos. Dois CNPJs foram vinculados a dois códigos CVM cada. As tabelas de emissores usam o código CVM como identidade cadastral e deixam a equivalência jurídica ou econômica para diligência. As frequências por observação contam exercícios. As quantidades de emissores no período deduplicam o código entre anos e setores do recorte. A soma das contagens setoriais de emissores pode exceder a quantidade de emissores do período.

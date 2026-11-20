@@ -7,6 +7,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from .diagnostics03 import carregar_indicadores
+from .references03 import selecionar_ultima_referencia
+
 COLUNAS = [
     "ANO_ARQUIVO", "DT_REFER", "CD_CVM", "ESCOPO", "SETOR_FCA", "GRUPO_SETORIAL",
     "INDICADOR", "SITUACAO", "VALOR",
@@ -16,11 +19,7 @@ METODOS = ("percentil", "z", "robusto")
 
 
 def _selecionar_ano_emissor(painel: pd.DataFrame) -> pd.DataFrame:
-    chave = [*COORTE, "CD_CVM"]
-    documentos = painel.dropna(subset=[*chave, "DT_REFER"])
-    recente = documentos.groupby(chave)["DT_REFER"].transform("max")
-    ultimos = documentos.loc[documentos["DT_REFER"].eq(recente)]
-    unicos = ultimos.loc[~ultimos.duplicated(chave, keep=False)]
+    unicos = painel.loc[selecionar_ultima_referencia(painel, por_indicador=True)]
     valores = unicos["VALOR"].to_numpy(dtype=float, na_value=np.nan)
     mask = (
         unicos["GRUPO_SETORIAL"].eq("nao_financeira")
@@ -151,15 +150,12 @@ def main() -> int:
     parser.add_argument("--min-pares", type=int, default=30)
     args = parser.parse_args()
 
-    particoes = sorted(args.painel.glob("[0-9][0-9][0-9][0-9]/indicadores.parquet"))
-    if not particoes:
-        parser.error(f"Não há partições de indicadores em {args.painel}.")
-    painel = pd.concat([pd.read_parquet(p, columns=COLUNAS) for p in particoes], ignore_index=True)
+    painel = carregar_indicadores(args.painel)[COLUNAS]
     resumo = experimentar_normalizacao(painel, min_pares=args.min_pares)
     if resumo.empty:
         parser.error("O painel não tem observações aptas para o experimento.")
     args.saida.parent.mkdir(parents=True, exist_ok=True)
-    resumo.to_csv(args.saida, index=False)
+    resumo.assign(MODO_TEMPORAL="descritivo_revisado", PROTOCOLO_REF="inclusivo_legado").to_csv(args.saida, index=False)
     print(f"{len(resumo)} resultados agregados em {args.saida}")
     return 0
 

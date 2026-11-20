@@ -228,7 +228,7 @@ def main() -> int:
         tabelas = diagnosticar_indicadores(carregar_indicadores(args.painel), minimo_correlacao=args.minimo_correlacao)
         args.saida.mkdir(parents=True, exist_ok=True)
         for nome, tabela in tabelas.items():
-            tabela.to_csv(args.saida / f"{nome}.csv", index=False)
+            tabela.assign(MODO_TEMPORAL="descritivo_revisado").to_csv(args.saida / f"{nome}.csv", index=False)
     except (OSError, KeyError, ValueError) as erro:
         parser.exit(1, f"Falha no diagnóstico: {erro}\n")
     print(args.saida)

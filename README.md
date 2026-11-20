@@ -16,7 +16,7 @@ O painel contábil de 2019 a 2025 reúne a auditoria de duplicatas, o universo d
 
 ## Sprint 03A
 
-A Sprint 03A mede cobertura conjunta, redundância, sensibilidade contábil e efeito de referências estatísticas no painel de 2019 a 2025. A especificação propõe dois eixos com composição fixa, pesos de partida, critérios de elegibilidade e um indicador separado de confiabilidade. A implementação dos scores depende de aprovação da Área de Pesquisa & Mercado. [Viabilidade e reprodução](docs/sprint-03a-viabilidade.md) · [Especificação dos scores](docs/sprint-03a-especificacao.md) · [Experimentos de normalização](docs/sprint-03a-normalizacao.md) · [Plano da Sprint 03B](docs/sprint-03b-plano.md)
+A Sprint 03A mede cobertura conjunta, redundância, sensibilidade contábil e efeito de referências estatísticas no painel de 2019 a 2025. A revisão final compara protocolos, testa macrosetores e propõe registrar separadamente disponibilidade, suporte estatístico, qualidade contábil e elegibilidade temporal. A implementação dos scores depende de aprovação da Área de Pesquisa & Mercado. [Revisão final](docs/sprint-03a-revisao-final.md) · [Viabilidade](docs/sprint-03a-viabilidade.md) · [Especificação dos scores](docs/sprint-03a-especificacao.md) · [Plano da Sprint 03B](docs/sprint-03b-plano.md)
 
 ## Execução local
 

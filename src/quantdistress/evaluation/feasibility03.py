@@ -12,6 +12,8 @@ from quantdistress.data.dfp import FATORES_ESCALA
 from quantdistress.data.universe import CHAVE_OBSERVACAO, CHAVE_REFERENCIA
 from quantdistress.features.indicators import PROTOTIPOS
 
+from .references03 import selecionar_ultima_referencia as selecionar_referencias
+
 CHAVE = ["ANO_ARQUIVO", *CHAVE_OBSERVACAO]
 Q_NUCLEO = ("rentabilidade_operacional_ativos", "fluxo_caixa_operacional_sobre_receita")
 D_NUCLEO = ("liquidez_corrente", "patrimonio_liquido_sobre_ativo", "financiamentos_reportados_sobre_ativo")
@@ -24,15 +26,6 @@ NIVEIS = {
     "periodo_escopo": ["ESCOPO"],
     "periodo_setor_escopo": ["ESCOPO", "GRUPO_SETORIAL", "SETOR_FCA"],
 }
-
-
-def selecionar_referencias(observacoes: pd.DataFrame) -> pd.Series:
-    """Marca uma única última referência por código CVM, ano e escopo, antes dos filtros."""
-    chave = ["ANO_ARQUIVO", "CD_CVM", "ESCOPO"]
-    ultima = observacoes.groupby(chave)["DT_REFER"].transform("max")
-    candidatas = observacoes["DT_REFER"].eq(ultima)
-    contagem = candidatas.groupby([observacoes[coluna] for coluna in chave]).transform("sum")
-    return candidatas & contagem.eq(1)
 
 
 def cenarios_cobertura(valores: pd.DataFrame, caixa_zero_com_financiamento: pd.Series) -> pd.DataFrame:
@@ -255,7 +248,7 @@ def main() -> int:
     tabelas = experimentar(args.painel, args.dados)
     args.saida.mkdir(parents=True, exist_ok=True)
     for nome, tabela in tabelas.items():
-        tabela.to_csv(args.saida / f"{nome}.csv", index=False)
+        tabela.assign(MODO_TEMPORAL="descritivo_revisado").to_csv(args.saida / f"{nome}.csv", index=False)
     gravar_json(args.saida / "manifesto.json", {
         "sha256_manifesto_painel": sha256(args.painel / "manifesto.json"),
         "modo_temporal": "descritivo_revisado",
