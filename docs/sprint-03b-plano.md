@@ -1,0 +1,26 @@
+# Sprint 03B — Plano de implementação após aprovação
+
+ImpactUFSCar — Pesquisa & Mercado. A Sprint 03B começa pela aprovação da composição dos eixos, das regras de elegibilidade e da referência estatística. A trilha descritiva pode validar a engenharia do cálculo. A trilha histórica depende de dados e referências com disponibilidade documentada. [Especificação para revisão](sprint-03a-especificacao.md) · [Resultados da Sprint 03A](sprint-03a-viabilidade.md)
+
+| Ordem | Frente | Trabalho | Critério de aceite |
+| --- | --- | --- | --- |
+| 1 | Pesquisa & Mercado | Registrar decisão sobre os núcleos, pesos, tratamento de estados contábeis, holdings, escopo individual e tamanho mínimo. Congelar versão da configuração e instância responsável. | Cada escolha tem justificativa econômica, parâmetro versionado, aprovação registrada e data de vigência. Os resultados descritivos e históricos têm finalidades e condições de publicação definidas. |
+| 2 | Engenharia temporal | Recuperar versões DFP anteriores e datas de divulgação, inicialmente em amostra por ano e versão. Vistoriar `ID_DOC`, conteúdo, hash, condições de acesso e correspondência com as contas. Investigar o histórico do FCA e os vínculos entre códigos CVM e CNPJs. | As linhas históricas carregam versão, prova de divulgação, data de coleta e fonte. Dados disponíveis só após o corte e vínculos ambíguos ficam em contagens de exclusão. O protocolo tem testes para reapresentação posterior, data sem horário, campos ausentes e troca de identidade cadastral. |
+| 3 | Contabilidade e setores | Diligenciar caudas e denominadores pequenos, composição de financiamentos, regimes específicos e holdings. Definir macrosetores contábeis comparáveis usando características da atividade e do balanço. | Amostra de casos revisada com documento e conta rastreáveis. Mapeamento de grupo e critérios de materialidade aprovados. Referências pequenas mantêm motivo explícito de indisponibilidade. |
+| 4 | Engenharia dos scores | Implementar configurações independentes e cálculo por eixo após aprovar as regras. Produzir componentes, cobertura ponderada, referência efetiva, confiabilidade e motivos de inelegibilidade. | A rotina calcula cada eixo apenas com todos os centrais e referência admissível. A saída guarda fórmulas, pesos, limiar, dispersão, amostra e fontes. Casos contábeis com caixa zero e patrimônio negativo passam por testes de unidade e integração. |
+| 5 | Estatística aplicada | Validar os componentes e eixos em janelas fixadas antes da avaliação. Medir alcance por ano e setor, estabilidade da referência, sensibilidade a pesos e método e efeito de excluir holdings. Investigar correlações e exposição a extremos em agregados. | Repetição por emissor tratada nos relatórios. Cenários usam população comum quando comparam pesos ou famílias de normalização. O relatório quantifica cobertura em saídas e motivos. A confirmação fora da amostra permanece separada das escolhas de desenvolvimento. |
+| 6 | Governança da publicação | Produzir parecer de prontidão, documentação de saída e checklist de integridade. Se houver avaliação de eventos, desenhar horizonte e censura com eventos públicos datados e métricas apropriadas. | A equipe decide se os resultados podem ser usados apenas de forma descritiva ou também sob o protocolo histórico. A interpretação identifica posição relativa, escopo e universo. Os artefatos gerados seguem os limites de acesso do projeto. |
+
+## Protocolo temporal a validar
+
+Fixe a data e hora de corte, a janela de referência, a regra de atraso para informação divulgada apenas com data civil e a versão pública admissível de cada conta. Monte uma vez os pares permitidos do período de referência e armazene os seus IDs, hashes, contagens e estatísticas antes de avaliar os alvos. Exclua o emissor alvo da sua referência e mantenha código CVM, setor e escopo vigentes. O primeiro teste histórico pode usar apenas o exercício fiscal anterior com informação disponível na data de congelamento. Se esse conjunto for insuficiente, registre a perda e avalie alternativas previamente aprovadas.
+
+Para avaliar associação a eventos em fase posterior, estabeleça janela de desenvolvimento, validação e teste cronológico. Garanta que rótulos do desenvolvimento tenham amadurecido antes do bloco seguinte. Use blocos ou agrupamento por emissor na análise de incerteza quando houver observações repetidas. Toda seleção com base em eventos requer avaliação em amostra reservada. Os pesos de partida seguem justificativas contábeis e ficam congelados no benchmark.
+
+## Testes de aceite mínimos
+
+- Identidade e janela temporal preservadas em casos com múltiplas referências, duas versões e divulgação posterior ao corte.
+- Segmentação idêntica entre execução e reprodução, com registros explícitos para setores pequenos, população constante e referências ambíguas.
+- Monotonicidade esperada por eixo, empates estáveis, limites `[0,100]` e verificação de que a ausência de um central bloqueia o eixo correspondente.
+- Caixa zero, patrimônio negativo, fluxo anual incompatível, casos incompletos, escalas monetárias e extremos plausíveis com decisão rastreável.
+- Sensibilidade a pesos e referência em amostra comum. Resultados verificados com dados oficiais em processo separado da CI unitária.

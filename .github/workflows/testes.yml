@@ -2,7 +2,7 @@ name: Testes unitários
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, sprint-02/auditoria-contabil-universo]
   push:
     branches: [main]
 
