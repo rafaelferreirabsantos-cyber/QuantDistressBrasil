@@ -23,8 +23,10 @@ Repository = "https://github.com/rafaelferreirabsantos-cyber/QuantDistressBrasil
 
 [dependency-groups]
 test = ["pytest>=8.3,<10"]
+visualizacao = ["matplotlib>=3.9,<4"]
 dev = [
     { include-group = "test" },
+    { include-group = "visualizacao" },
     "ipykernel>=6.29,<8",
     "jupyterlab>=4.3,<5",
     "nbconvert>=7.16,<8",

@@ -1,1 +1,1 @@
-"""Fronteira para futuros índices independentes de qualidade e estresse financeiro."""
+"""Scores experimentais independentes de qualidade operacional e estresse financeiro."""
