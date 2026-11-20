@@ -18,6 +18,12 @@ O painel contábil de 2019 a 2025 reúne a auditoria de duplicatas, o universo d
 
 A Sprint 03A mede cobertura conjunta, redundância, sensibilidade contábil e efeito de referências estatísticas no painel de 2019 a 2025. A revisão final compara protocolos, testa macrosetores e propõe registrar separadamente disponibilidade, suporte estatístico, qualidade contábil e elegibilidade temporal. A implementação dos scores depende de aprovação da Área de Pesquisa & Mercado. [Revisão final](docs/sprint-03a-revisao-final.md) · [Viabilidade](docs/sprint-03a-viabilidade.md) · [Especificação dos scores](docs/sprint-03a-especificacao.md) · [Plano da Sprint 03B](docs/sprint-03b-plano.md)
 
+## Sprint 03B
+
+O benchmark experimental calcula Quality e Financial Distress no painel `descritivo_revisado` com setor FCA exato, âmbito contábil e ano separados. O relatório distingue disponibilidade, suporte, qualidade contábil e admissibilidade temporal. As referências macrosetoriais candidatas ficam em uma configuração própria. [Relatório e reprodução](docs/sprint-03b-resultados.md)
+
+Após gerar o painel da Sprint 02, execute `uv run --locked python -m quantdistress.scoring.run03b`. O comando grava Parquet com scores e linhagem, uma matriz agregada e os CSVs de sensibilidade em `outputs/sprint03b/`. Use `--saida` para testar nova configuração de entradas sem sobrescrever uma execução. O grupo `dev` inclui a dependência de visualização.
+
 ## Execução local
 
 Execute na raiz do repositório com `uv` e Python 3.13. O `uv.lock` fixa as dependências. O grupo `dev` inclui Pytest e Jupyter. [Documentação do uv](https://docs.astral.sh/uv/)
