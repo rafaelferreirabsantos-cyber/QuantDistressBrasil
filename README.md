@@ -14,6 +14,10 @@ A primeira entrega organiza a ingestão e a exploração das demonstrações fin
 
 O painel contábil de 2019 a 2025 reúne a auditoria de duplicatas, o universo documental de emissores por exercício e nove indicadores candidatos. As tabelas usam a versão máxima identificada na captura e mantêm o escopo individual ou consolidado. O painel tem finalidade descritiva. A validação prospectiva depende da evidência de divulgação e das versões históricas dos valores. [Parecer e cobertura](docs/resultado-sprint-02.md) · [Inventário histórico](docs/historico-dfp.md) · [Auditoria de duplicatas](docs/auditoria-duplicatas.md) · [Dicionário dos indicadores](docs/conceitos-indicadores.md)
 
+## Sprint 03A
+
+A Sprint 03A mede cobertura conjunta, redundância, sensibilidade contábil e efeito de referências estatísticas no painel de 2019 a 2025. A revisão final compara protocolos, testa macrosetores e propõe registrar separadamente disponibilidade, suporte estatístico, qualidade contábil e elegibilidade temporal. A implementação dos scores depende de aprovação da Área de Pesquisa & Mercado. [Revisão final](docs/sprint-03a-revisao-final.md) · [Viabilidade](docs/sprint-03a-viabilidade.md) · [Especificação dos scores](docs/sprint-03a-especificacao.md) · [Plano da Sprint 03B](docs/sprint-03b-plano.md)
+
 ## Execução local
 
 Execute na raiz do repositório com `uv` e Python 3.13. O `uv.lock` fixa as dependências. O grupo `dev` inclui Pytest e Jupyter. [Documentação do uv](https://docs.astral.sh/uv/)
