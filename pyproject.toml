@@ -22,11 +22,12 @@ quantdistress-dfp = "quantdistress.data.dfp:main"
 Repository = "https://github.com/rafaelferreirabsantos-cyber/QuantDistressBrasil"
 
 [dependency-groups]
+test = ["pytest>=8.3,<10"]
 dev = [
+    { include-group = "test" },
     "ipykernel>=6.29,<8",
     "jupyterlab>=4.3,<5",
     "nbconvert>=7.16,<8",
-    "pytest>=8.3,<10",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -35,3 +36,4 @@ packages = ["src/quantdistress"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
+markers = ["dados_oficiais: exige uma captura oficial fornecida localmente"]
